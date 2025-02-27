@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsáveis</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/static/responsavel.css">
+</head>
+<body>
+    <header>
+        <a href="/crianca_cadastro">
+            <img style="height: 70px;" src="/static/igreja.png" alt="Logo" class="logo">
+        </a>
+    </header>
+    <div class="main-content">
+        <h1>Busca de Responsáveis</h1>
+        
+        <label for="responsavel">Responsável:</label>
+        <input type="text" id="responsavel" name="responsavel" placeholder="Digite o nome do responsável">
+        
+        <label for="escola">Escola:</label>
+        <select id="escola" name="escola">
+            <option value="">Selecione uma escola</option>
+            <option value="maternal">Maternal</option>
+            <option value="AVD">AVD</option>
+            <!-- Adicione mais opções conforme necessário -->
+        </select>
+        
+        <div id="responsaveis-list">
+            <!-- A lista de responsáveis será carregada aqui -->
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            function fetchResponsaveis() {
+                var nome_responsavel = $('#responsavel').val();
+                var escola = $('#escola').val();
+
+                $.ajax({
+                    url: '/responsaveis',
+                    method: 'GET',
+                    data: {
+                        responsavel: nome_responsavel,
+                        escola: escola
+                    },
+                    success: function(response) {
+                        var responsaveisList = $('#responsaveis-list');
+                        responsaveisList.empty();  // Limpa a lista antes de adicionar os novos dados
+
+                        if (response.length === 0) {
+                            responsaveisList.append('<p>Nenhum responsável encontrado.</p>');
+                        } else {
+                            response.forEach(function(responsavel) {
+                                var card = `
+                                    <div class="card">
+                                        <h3>${responsavel.nome}</h3>
+                                        <p>Telefone: ${responsavel.telefone}</p>
+                                        <p>Quantidade de filhos: ${responsavel.quantidade_filhos}</p>
+                                        <a href="/responsaveis/${responsavel.id}">Ver detalhes</a>
+                                    </div>
+                                `;
+                                responsaveisList.append(card);
+                            });
+                        }
+                    }
+                });
+            }
+
+            // Chama a função para carregar a lista de responsáveis sempre que houver uma mudança no campo de nome ou escola
+            $('#responsavel, #escola').on('input change', function() {
+                fetchResponsaveis();
+            });
+
+            // Inicializa com a lista de responsáveis ao carregar a página
+            fetchResponsaveis();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes da Criança</title>
+    <link rel="stylesheet" href="/static/crianca_detalhes.css">
+</head>
+<body>
+
+    <header>
+        <a href="/crianca_cadastro">
+            <img src="/static/igreja.png" alt="Logo" class="logo">
+        </a>
+    </header>
+
+    <div class="container">
+        <h1>Detalhes da Criança</h1>
+
+        <!-- Card com os dados principais da criança -->
+        <div class="card">
+            <h2>{{ crianca[1] }}</h2> <!-- Nome da criança -->
+            <p><strong>Idade:</strong> {{ crianca[2] }}</p>
+            <p><strong>Escola:</strong> {{ crianca[3] }}</p>
+        </div>
+
+        <h3 style="color:darkorange; font-size: 30px; ">Presenças</h3>
+
+        <!-- Botão para adicionar nova presença -->
+        <button style="margin-top: 15px; margin-bottom: 20px;" id="adicionar-presenca" onclick="mostrarFormulario()">Adicionar Data e Turno</button>
+
+        <!-- Formulário oculto para adicionar nova presença -->
+        <div id="form-adicionar-presenca" style="display: none; margin-top: 10px;">
+            <label style="color: aliceblue;" for="nova-data"><strong>Data:</strong></label>
+            <input type="date" id="nova-data" required>
+
+            <label style="color: aliceblue;" for="novo-turno"><strong>Turno:</strong></label>
+            <select id="novo-turno">
+                <option value="Manhã">Manhã</option>
+                <option value="Tarde">Tarde</option>
+                <option value="Noite">Noite</option>
+            </select>
+
+            <button onclick="salvarPresenca('{{ crianca[0] }}')">Salvar</button>
+            <button onclick="cancelarAdicao()">Cancelar</button>
+        </div>
+
+        <!-- Presença Inicial (que está na tabela 'criancas') -->
+        <div class="card">
+            <p><strong>Data:</strong> {{ crianca[8] }}</p>
+            <p><strong>Turno:</strong> {{ crianca[7] }}</p>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="entregue-inicial"
+                    {% if crianca[10] == 'Entregue' %} checked {% endif %}
+                    onchange="atualizarStatus('inicial', '{{ crianca[0] }}', this.checked, 'inicial')">
+                <label for="entregue-inicial">Entregue?</label>
+            </div>
+        </div>
+
+        <!-- Outras presenças registradas -->
+        {% for presenca in presencas %}
+        <div class="card">
+            <p><strong>Data:</strong> {{ presenca[0] }}</p>
+            <p><strong>Turno:</strong> {{ presenca[1] }}</p>
+
+            <div class="checkbox-container">
+                <input type="checkbox" id="entregue-{{ presenca[3] or 'inicial' }}"
+                    {% if presenca[2] == 'Entregue' %} checked {% endif %}
+                    onchange="atualizarStatus('{{ presenca[3] }}', '{{ crianca[0] }}', this.checked, '{{ presenca[3] }}')">
+                <label for="entregue-{{ presenca[3] }}">Entregue?</label>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- <a href="/responsaveis/{{ crianca[5] }}" class="btn">Voltar para o Responsável</a> -->
+    </div>
+
+    <script>
+        // Exibir formulário ao clicar no botão
+        function mostrarFormulario() {
+            document.getElementById('form-adicionar-presenca').style.display = 'block';
+        }
+
+        // Esconder o formulário caso o usuário cancele
+        function cancelarAdicao() {
+            document.getElementById('form-adicionar-presenca').style.display = 'none';
+        }
+
+        // Função para salvar a presença no banco de dados
+        function salvarPresenca(criancaId) {
+            let data = document.getElementById('nova-data').value;
+            let turno = document.getElementById('novo-turno').value;
+
+            if (!data) {
+                alert("Por favor, selecione uma data.");
+                return;
+            }
+
+            fetch('/adicionar_presenca', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ crianca_id: criancaId, data: data, turno: turno })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Presença adicionada com sucesso!');
+                    location.reload(); // Recarrega a página para exibir a nova presença
+                } else {
+                    location.reload();
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        }
+
+        // Função para atualizar o status de "Entregue"
+        function atualizarStatus(presencaId, criancaId, marcado, presencaRef) {
+            fetch('/atualizar_entregue', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: presencaId !== 'inicial' ? presencaId : null,
+                    crianca_id: criancaId,
+                    entregue: marcado ? "Entregue" : "Ainda não entregue"
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const checkbox = document.getElementById('entregue-' + presencaRef);
+                    checkbox.checked = marcado;
+                } else {
+                    alert("Erro ao atualizar status.");
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        }
+    </script>
+
+</body>
+</html>

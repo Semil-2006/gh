@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/index.css">
+    <script src="/static/index.js"></script>
+    <title>Cadastro de Criança</title>
+    
+</head>
+<body>
+    <header>
+        <img href="/" src="/static/igreja.png" alt="Logo" class="logo">
+        <div class="menu-container">
+            <div class="menu-button" onclick="toggleMenu()">⚪</div>
+            <div id="dropdown-menu" class="dropdown-menu">
+                <a href="/responsaveis">Ver Crianças</a>
+                <a href="/ver-usuarios">Ver Usuários</a>
+                <a href="/cadastrar-usuario">Cadastrar Usuário</a>
+                <a href="/mudar-senha">Mudar Senha</a>
+                <a href="/planilha_criancas">Gerar Relatório Crianças</a>
+                <a href="/planilha_responsaveis">Gerar Relatório Pais</a>
+                <a href="/logout">Sair</a>
+            </div>
+        </div>
+    </header>
+
+    <form action="/crianca_cadastro" method="POST" enctype="multipart/form-data">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div id="flash-messages">
+                    {% for message in messages %}
+                        <div class="flash-message">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <label for="nome_crianca">Nome da Criança:</label>
+        <input type="text" id="nome_crianca" name="nome_crianca" required><br>
+        
+        <label for="idade_crianca">Idade da Criança:</label>
+        <input type="number" id="idade_crianca" name="idade_crianca" required><br>
+
+        <label for="escola">Qual Escola:</label>
+        <select id="escola" name="escola" required><br>
+            <option value="" disabled selected>Selecione</option>
+            <option value="Maternal">Maternal</option>
+            <option value="AVD">AVD</option>
+        </select>
+        
+        <label for="nome_responsavel">Nome do Responsável:</label>
+        <input type="text" id="nome_responsavel" name="nome_responsavel" required><br>
+        
+        <label>Tem mais filhos?</label>
+        <input type="radio" id="mais_filhos_sim" name="mais_filhos" value="sim" onclick="mostrarCamposExtras()"> Sim
+        <input type="radio" id="mais_filhos_nao" name="mais_filhos" value="nao" onclick="mostrarCamposExtras()"> Não<br>
+        
+        <div id="quantidade_filhos_div" style="display: none;">
+            <label for="quantidade_filhos">Quantos filhos a mais? </label>
+            <select id="quantidade_filhos" name="quantidade_filhos" onchange="mostrarPerguntaMesmaSala()">
+                <option value="">Selecione</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select><br>
+        </div>
+
+        <div id="mesma_sala_div" style="display: none;">
+            <label>São da mesma sala?</label>
+            <input type="radio" name="mesma_sala" value="sim" onclick="gerarCamposFilhos()"> Sim
+            <input type="radio" name="mesma_sala" value="nao" onclick="gerarCamposFilhos()"> Não<br>
+        </div>
+        
+        <div id="filhos_info"></div>
+
+        <label style="margin-top: 10px;" for="telefone_responsavel">Telefone do Responsável:</label>
+        <input type="tel" id="telefone_responsavel" name="telefone_responsavel" required><br>
+        
+        <label for="cidade_responsavel">Cidade do Responsável:</label>
+        <input type="text" id="cidade_responsavel" name="cidade_responsavel" required><br>
+        
+        <label for="turno">Turno que veio:</label>
+        <select id="turno" name="turno" required>
+            <option value="manha">Manhã</option>
+            <option value="tarde">Tarde</option>
+            <option value="noite">Noite</option>
+        </select><br>
+        
+        <label for="data_visita">Data que veio:</label>
+        <input type="date" id="data_visita" name="data_visita" required><br>
+        
+        <label for="foto">Foto:</label>
+        <input type="file" id="foto" name="foto" accept="image/*" onchange="previewImagem()"><br>
+
+        <!-- Pré-visualização da imagem (inicialmente oculta) -->
+        <img id="preview" style="display: none; width: 250px; height: auto; cursor: pointer; margin-top: 15px;" alt="Prévia da imagem">
+
+        <!-- Modal para exibir a imagem em tela cheia -->
+        <div id="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center;">
+            <img id="imagem-grande" style="max-width: 90%; max-height: 90%;">
+        </div>
+
+        
+        <button style="margin-top: 20px;" type="submit">Cadastrar</button>
+    </form>
+</body>
+</html>

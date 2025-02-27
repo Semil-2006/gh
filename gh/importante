@@ -1,0 +1,63 @@
+sudo docker-compose up --build
+
+
+para ver os contabers 
+docker ps
+
+
+@app.route('/responsaveis', methods=['GET'])
+def get_responsaveis():
+    conn = get_db_connection('responsaveis.db')
+    responsaveis = conn.execute('SELECT * FROM responsaveis').fetchall()
+    conn.close()
+    
+    return jsonify([dict(responsavel) for responsavel in responsaveis])
+
+
+@app.route('/criancas', methods=['GET'])
+def get_criancas():
+    conn = get_db_connection('criancas.db')
+    criancas = conn.execute('SELECT * FROM criancas').fetchall()
+    conn.close()
+    
+    return jsonify([dict(crianca) for crianca in criancas])
+
+@app.route('/detalhes/<int:id>')
+def detalhes_responsavel(id):
+    return render_template("detalhes.html")
+
+
+
+
+
+@app.route('/responsavel/<int:responsavel_id>', methods=['GET'])
+def get_responsavel(responsavel_id):
+    conn = get_db(DATABASE_RESPONSAVEIS)
+    responsavel = conn.execute("SELECT * FROM responsaveis WHERE id = ?", (responsavel_id,)).fetchone()
+    conn.close()
+
+    if not responsavel:
+        return jsonify({"error": "Responsável não encontrado"}), 404
+
+    conn = get_db(DATABASE_CRIANCAS)
+    criancas = conn.execute("SELECT * FROM criancas WHERE responsavel_id = ?", (responsavel_id,)).fetchall()
+    conn.close()
+
+    return jsonify({
+        "responsavel": dict(responsavel),
+        "criancas": [dict(crianca) for crianca in criancas]
+    })
+
+
+@app.route('/atualizar_entrega/<int:crianca_id>', methods=['POST'])
+def atualizar_entrega(crianca_id):
+    data = request.get_json()
+    novo_status = data.get("entregue", "Ainda não entregue")
+    
+    conn = sqlite3.connect(DATABASE_CRIANCAS)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE criancas SET entregue = ? WHERE id = ?", (novo_status, crianca_id))
+    conn.commit()
+    conn.close()
+    
+    return jsonify({"success": True, "message": "Status atualizado com sucesso!"})

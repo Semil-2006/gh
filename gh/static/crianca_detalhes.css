@@ -1,0 +1,172 @@
+/* Resetando margens e preenchimento padrão */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilo geral do corpo */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #0d214f; /* cor de fundo suave */
+    color: #333; /* cor de texto padrão */
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    height: 100vh;
+    flex-direction: column;
+    padding: 0 15px;
+    margin-top: 50vh; /* Move o conteúdo para começar abaixo da metade da tela */
+    transform: translateY(-50%); /* Ajuste para centralizar o conteúdo na parte inferior da tela */
+}
+
+.logo {
+    height: 50px;
+}
+
+/* Estilo do título */
+h1 {
+    font-size: 2.5rem;
+    color: #4169E1; /* Azul Royal */
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px; /* Max width para manter o conteúdo não excessivamente largo em telas grandes */
+    margin: 0 auto;
+}
+
+/* Estilo dos cards */
+.card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h2 {
+    font-size: 1.75rem;
+    color: #4169E1;
+    margin-bottom: 10px;
+}
+
+.card p {
+    font-size: 1rem;
+    margin-bottom: 8px;
+}
+
+.card label {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.card button {
+    background-color: #4169E1;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.card button:hover {
+    background-color: #3656a2;
+}
+
+/* Estilo do campo de busca */
+#search {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 2px solid #4169E1; /* Azul Royal */
+    border-radius: 4px;
+    font-size: 1rem;
+    color: #333;
+}
+
+#search:focus {
+    border-color: #FFD700; /* Dourado */
+    outline: none;
+}
+
+/* Estilo do filtro de seleção */
+select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 2px solid #4169E1; /* Azul Royal */
+    border-radius: 4px;
+    font-size: 1rem;
+    color: #333;
+}
+
+select:focus {
+    border-color: #FFD700; /* Dourado */
+    outline: none;
+}
+
+/* Estilo dos checkboxes */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.checkbox-container input {
+    margin-right: 10px;
+}
+
+/* Media Queries para responsividade */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    .card {
+        padding: 15px;
+    }
+
+    #search, select {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+
+    .container {
+        padding: 0 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    .card {
+        padding: 10px;
+    }
+
+    #search, select {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 450px) {
+    h1 {
+        margin-top: 30px;
+    }
+
+    .card button {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+}

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Responsável</title>
+    <link rel="stylesheet" href="/static/responsavel_detalhes.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        .card {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .card h3 {
+            margin: 5px 0;
+        }
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .checkbox-container label {
+            margin-left: 5px;
+        }
+        .ver-crianca {
+            display: block;
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Detalhes do Responsável</h1>
+
+        <h2>{{ responsavel[1] }}</h2> <!-- Nome do responsável -->
+        <p>Telefone: {{ responsavel[2] }}</p>
+        <p>Quantidade de Filhos: {{ responsavel[3] }}</p>
+
+        <h3>Crianças:</h3>
+
+        {% for crianca in criancas %}
+        <div class="card">
+            <h3>{{ crianca[1] }}</h3> <!-- Nome da criança -->
+            <p>Idade: {{ crianca[2] }}</p>
+            <p>Escola: {{ crianca[3] }}</p>
+
+            <div class="checkbox-container">
+                <input type="checkbox" id="entregue_{{ crianca[0] }}" {% if crianca[4] == 'Entregue' %} checked {% endif %} 
+                onchange="atualizarStatus('{{ crianca[0] }}', this.checked)">
+                <label for="entregue_{{ crianca[0] }}">Entregue?</label>
+            </div>
+
+            <a href="/crianca/{{ crianca[0] }}" class="ver-crianca">Ver Criança</a>
+        </div>
+        {% endfor %}
+
+        <a href="/responsaveis">Voltar para a lista de responsáveis</a>
+    </div>
+
+    <script>
+        function atualizarStatus(criancaId, marcado) {
+            fetch('/atualizar_entregue', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: criancaId, entregue: marcado ? "Entregue" : "Ainda não entregue" })
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Erro:', error));
+        }
+    </script>
+
+</body>
+</html>
